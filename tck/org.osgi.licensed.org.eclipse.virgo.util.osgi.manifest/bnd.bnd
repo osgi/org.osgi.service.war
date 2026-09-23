@@ -1,0 +1,12 @@
+# Third-party bundle without its own source code: the original ships it as
+# a ready-made jar (licensed/repo) that moved into this module via
+# keepPaths/moves. bnd repackages it here unchanged (-includeresource: @jar)
+# into a bundle artifact with an explicit BSN/version, instead of placing
+# the jar into the local repository by hand.
+-includeresource: @org.eclipse.virgo.util.osgi.manifest-3.6.4.jar
+-fixupmessages: "Split package*"
+Bundle-SymbolicName: org.eclipse.virgo.util.osgi.manifest
+Bundle-Version: 3.6.4.RELEASE
+Export-Package: org.eclipse.virgo.util.osgi.manifest;version="3.6.4.RELEASE";uses:="org.eclipse.virgo.util.osgi.manifest.parse,org.eclipse.virgo.util.parser.manifest,org.osgi.framework",org.eclipse.virgo.util.osgi.manifest.parse;version="3.6.4.RELEASE"
+Import-Package: org.eclipse.virgo.util.common;version="[3.6.4,3.6.5)",org.eclipse.virgo.util.parser.manifest;version="[3.6.4,3.6.5)",org.osgi.framework;version="0"
+-noextraheaders: true
