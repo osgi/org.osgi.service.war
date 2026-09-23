@@ -1,0 +1,13 @@
+# Third-party bundle without its own source code: the original ships it as
+# a ready-made jar (licensed/repo) that moved into this module via
+# keepPaths/moves. bnd repackages it here unchanged (-includeresource: @jar)
+# into a bundle artifact with an explicit BSN/version, instead of placing
+# the jar into the local repository by hand.
+-includeresource: @org.eclipse.gemini.web.core-2.2.7.jar
+-fixupmessages: "Split package*"
+Bundle-SymbolicName: org.eclipse.gemini.web.core
+Bundle-Version: 2.2.7.RELEASE
+Bundle-Activator: org.eclipse.gemini.web.internal.WebContainerActivator
+Export-Package: org.eclipse.gemini.web.core;version="2.2.7";uses:="javax.servlet,org.eclipse.virgo.util.osgi.manifest,org.osgi.framework",org.eclipse.gemini.web.core.spi;version="2.2.7";uses:="javax.servlet,org.osgi.framework",org.eclipse.gemini.web.internal.template;version="2.2.7";uses:="org.osgi.framework,org.osgi.util.tracker",org.eclipse.gemini.web.internal.url;version="2.2.7";uses:="org.eclipse.gemini.web.core,org.eclipse.virgo.util.io,org.eclipse.virgo.util.osgi.manifest,org.eclipse.virgo.util.osgi.manifest.parse,org.osgi.framework,org.osgi.service.url"
+Import-Package: javax.servlet;version="2.6.0",org.eclipse.virgo.util.io;version="0",org.eclipse.virgo.util.osgi;version="0",org.eclipse.virgo.util.osgi.manifest;version="0",org.eclipse.virgo.util.osgi.manifest.parse;version="0",org.osgi.framework;version="0",org.osgi.framework.wiring;version="0",org.osgi.service.event;version="0";resolution:="optional",org.osgi.service.url;version="0",org.osgi.util.tracker;version="0",org.slf4j;version="[1.7.2,1.8)"
+-noextraheaders: true

@@ -1,0 +1,12 @@
+# Third-party bundle without its own source code: the original ships it as
+# a ready-made jar (licensed/repo) that moved into this module via
+# keepPaths/moves. bnd repackages it here unchanged (-includeresource: @jar)
+# into a bundle artifact with an explicit BSN/version, instead of placing
+# the jar into the local repository by hand.
+-includeresource: @org.eclipse.jdt.core.compiler.batch-3.10.0.jar
+-fixupmessages: "Split package*"
+Bundle-SymbolicName: org.eclipse.jdt.core.compiler.batch
+Bundle-Version: 3.10.0.v20140604-1726
+Export-Package: org.eclipse.jdt.core,org.eclipse.jdt.core.compiler,org.eclipse.jdt.internal.antadapter;x-internal:=true,org.eclipse.jdt.internal.compiler;x-internal:=true,org.eclipse.jdt.internal.compiler.apt.dispatch;x-internal:=true,org.eclipse.jdt.internal.compiler.apt.model;x-internal:=true,org.eclipse.jdt.internal.compiler.apt.util;x-internal:=true,org.eclipse.jdt.internal.compiler.ast;x-internal:=true,org.eclipse.jdt.internal.compiler.batch;x-internal:=true,org.eclipse.jdt.internal.compiler.classfmt;x-internal:=true,org.eclipse.jdt.internal.compiler.codegen;x-internal:=true,org.eclipse.jdt.internal.compiler.env;x-internal:=true,org.eclipse.jdt.internal.compiler.flow;x-internal:=true,org.eclipse.jdt.internal.compiler.impl;x-internal:=true,org.eclipse.jdt.internal.compiler.lookup;x-internal:=true,org.eclipse.jdt.internal.compiler.parser;x-internal:=true,org.eclipse.jdt.internal.compiler.parser.diagnose;x-internal:=true,org.eclipse.jdt.internal.compiler.problem;x-internal:=true,org.eclipse.jdt.internal.compiler.util;x-internal:=true,org.eclipse.jdt.internal.compiler.tool;x-internal:=true
+Bundle-ClassPath: .
+-noextraheaders: true
