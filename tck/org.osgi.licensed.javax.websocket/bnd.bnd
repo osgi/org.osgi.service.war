@@ -1,0 +1,11 @@
+# Third-party bundle without its own source code: the original ships it as
+# a ready-made jar (licensed/repo) that moved into this module via
+# keepPaths/moves. bnd repackages it here unchanged (-includeresource: @jar)
+# into a bundle artifact with an explicit BSN/version, instead of placing
+# the jar into the local repository by hand.
+-includeresource: @javax.websocket-1.1.0.jar
+-fixupmessages: "Split package*"
+Bundle-SymbolicName: javax.websocket
+Bundle-Version: 1.1.0.v201401130840
+Export-Package: javax.websocket;version="1.1",javax.websocket.server;version="1.1";uses:="javax.websocket"
+-noextraheaders: true
