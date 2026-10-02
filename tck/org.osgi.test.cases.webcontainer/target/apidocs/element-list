@@ -1,0 +1,10 @@
+org.osgi.test.cases.webcontainer.handler
+org.osgi.test.cases.webcontainer.junit
+org.osgi.test.cases.webcontainer.log
+org.osgi.test.cases.webcontainer.simple
+org.osgi.test.cases.webcontainer.tw1
+org.osgi.test.cases.webcontainer.tw1.servlet
+org.osgi.test.cases.webcontainer.tw4.servlet
+org.osgi.test.cases.webcontainer.tw5.servlet
+org.osgi.test.cases.webcontainer.util
+org.osgi.test.cases.webcontainer.util.validate
