@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.osgi</groupId>
+		<artifactId>org.osgi.service.war.reactor</artifactId>
+		<version>${revision}</version>
+	</parent>
+	<groupId>org.osgi.tck</groupId>
+	<artifactId>org.osgi.tck.service.war</artifactId>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>org.osgi.test.cases.webcontainer</module>
+		<module>org.osgi.test.run.war</module>
+		<module>org.osgi.licensed.javax.websocket</module>
+		<module>org.osgi.licensed.org.apache.catalina</module>
+		<module>org.osgi.licensed.org.apache.catalina.ha</module>
+		<module>org.osgi.licensed.org.apache.catalina.tribes</module>
+		<module>org.osgi.licensed.org.apache.coyote</module>
+		<module>org.osgi.licensed.org.apache.el</module>
+		<module>org.osgi.licensed.org.apache.jasper</module>
+		<module>org.osgi.licensed.org.apache.juli.extras</module>
+		<module>org.osgi.licensed.org.apache.tomcat.api</module>
+		<module>org.osgi.licensed.org.apache.tomcat.util</module>
+		<module>org.osgi.licensed.org.apache.tomcat.websocket</module>
+		<module>org.osgi.licensed.org.eclipse.gemini.web.core</module>
+		<module>org.osgi.licensed.org.eclipse.gemini.web.extender</module>
+		<module>org.osgi.licensed.org.eclipse.gemini.web.tomcat</module>
+		<module>org.osgi.licensed.org.eclipse.jdt.core.compiler.batch</module>
+		<module>org.osgi.licensed.org.eclipse.virgo.util.common</module>
+		<module>org.osgi.licensed.org.eclipse.virgo.util.io</module>
+		<module>org.osgi.licensed.org.eclipse.virgo.util.math</module>
+		<module>org.osgi.licensed.org.eclipse.virgo.util.osgi</module>
+		<module>org.osgi.licensed.org.eclipse.virgo.util.osgi.manifest</module>
+		<module>org.osgi.licensed.org.eclipse.virgo.util.parser.manifest</module>
+	</modules>
+
+</project>
