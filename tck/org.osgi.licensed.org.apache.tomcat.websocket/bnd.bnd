@@ -7,6 +7,7 @@
 -fixupmessages: "Split package*"
 Bundle-SymbolicName: org.apache.tomcat.websocket
 Bundle-Version: 7.0.61
+Fragment-Host: org.apache.catalina;bundle-version="[7.0.61, 7.0.62)"
 Export-Package: org.apache.tomcat.websocket;version="7.0.61";uses:="javax.net.ssl,javax.websocket,org.apache.tomcat.util.res",org.apache.tomcat.websocket.pojo;version="7.0.61";uses:="javax.websocket,org.apache.tomcat.util.res,org.apache.tomcat.websocket",org.apache.tomcat.websocket.server;version="7.0.61";uses:="javax.servlet,javax.servlet.annotation,javax.servlet.http,javax.websocket,javax.websocket.server,org.apache.coyote.http11.upgrade,org.apache.coyote.http11.upgrade.servlet31,org.apache.tomcat.websocket"
 Import-Package: javax.net.ssl;version="0",javax.servlet;version="[2.6.0, 4.0.0)",javax.servlet.annotation;version="[2.6.0, 4.0.0)",javax.servlet.http;version="[2.6.0, 4.0.0)",javax.websocket;version="[1.0.0, 2.0.0)",javax.websocket.server;version="[1.0.0, 2.0.0)",org.apache.catalina.connector;version="[7.0.61, 7.0.62)",org.apache.coyote.http11.upgrade;version="[7.0.61, 7.0.62)",org.apache.coyote.http11.upgrade.servlet31;version="[7.0.61, 7.0.62)",org.apache.juli.logging;version="[7.0.61, 7.0.62)",org.apache.tomcat.util;version="[7.0.61, 7.0.62)",org.apache.tomcat.util.buf;version="[7.0.61, 7.0.62)",org.apache.tomcat.util.codec.binary;version="[7.0.61, 7.0.62)",org.apache.tomcat.util.res;version="[7.0.61, 7.0.62)",org.apache.tomcat.util.security;version="[7.0.61, 7.0.62)",org.apache.tomcat.util.threads;version="[7.0.61, 7.0.62)"
 -noextraheaders: true
