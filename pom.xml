@@ -7,7 +7,7 @@
 	<artifactId>org.osgi.service.war.reactor</artifactId>
 	<version>${revision}</version>
 	<packaging>pom</packaging>
-	<description>OSGi Web Applications Specification (legacy</description>
+	<description>OSGi Web Applications Specification</description>
 
 	<!-- The version lives in exactly one place: .mvn/maven.config
 	     (-Drevision=...). Maven picks that file up from the repo root for
@@ -53,6 +53,10 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
+
+	<properties>
+		<osgi.scm.repository>osgi/org.osgi.service.war</osgi.scm.repository>
+	</properties>
 
 	<modules>
 		<module>spec/org.osgi.spec.service.war</module>
