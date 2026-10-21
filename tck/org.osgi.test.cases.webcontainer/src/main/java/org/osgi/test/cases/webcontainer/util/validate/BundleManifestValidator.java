@@ -17,9 +17,7 @@
  *******************************************************************************/
 package org.osgi.test.cases.webcontainer.util.validate;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,8 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
+import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.osgi.framework.Bundle;
@@ -103,23 +101,23 @@ public class BundleManifestValidator implements Validator {
      * 2. Otherwise, preserve the Bundle-SymbolicName value in the manifest file
      */
     public void validateSymbolicName() throws Exception {
-        assertNotNull(this.dictionary);
+        assertThat(this.dictionary).isNotNull();
         
         // test bundle manifest is constructed per user's deployment options
         log("verify Bundle-SymbolicName exists");
         if (this.debug) {
             log("SymbolicName is " + this.b.getSymbolicName());
         }              
-        assertNotNull(this.b.getSymbolicName());
+        assertThat(this.b.getSymbolicName()).isNotNull();
         
         // dSymbolicName - deployer specified Bundle-SymbolicName value
         Object dSymbolicName = this.deployOptions == null ? null : this.deployOptions.get(Constants.BUNDLE_SYMBOLICNAME);
         // mSymbolicName - manifest Bundle-SymbolicName value
         Object mSymbolicName = this.manifest == null ? null : this.manifest.getMainAttributes().getValue(new Name(Constants.BUNDLE_SYMBOLICNAME));
         if (dSymbolicName != null) {
-            assertEquals((String)dSymbolicName, this.b.getSymbolicName());
+            assertThat(this.b.getSymbolicName()).isEqualTo((String)dSymbolicName);
         } else if (mSymbolicName != null) {
-            assertEquals((String)mSymbolicName, this.b.getSymbolicName());
+            assertThat(this.b.getSymbolicName()).isEqualTo((String)mSymbolicName);
         } 
     }
     
@@ -130,7 +128,7 @@ public class BundleManifestValidator implements Validator {
      * 2. Otherwise, preserve the Bundle-Version value in the manifest file
      */
     public void validateBundleVersion() throws Exception {
-        assertNotNull(this.dictionary);
+        assertThat(this.dictionary).isNotNull();
         Object versionObj = this.dictionary.get(Constants.BUNDLE_VERSION);
         if (versionObj != null) {
 	        String version = (String)versionObj;
@@ -149,11 +147,9 @@ public class BundleManifestValidator implements Validator {
 	        Object mVersion = this.manifest == null ? null : this.manifest.getMainAttributes().getValue(Constants.BUNDLE_VERSION);
 	        // let's convert them to Version object so that we can treat version 1.0 and 1.0.0 the same value
 	        if (dVersion != null) {
-	            assertTrue("Expected " + version + " but got " + dVersion, 
-	                       new Version((String)dVersion).compareTo(v) == 0);
+	            assertThat(new Version((String)dVersion).compareTo(v) == 0).as("Expected " + version + " but got " + dVersion).isTrue();
 	        } else if (mVersion !=null) {
-	            assertTrue("Expected " + version + " but got " + mVersion,
-	                       new Version((String)mVersion).compareTo(v) == 0);
+	            assertThat(new Version((String)mVersion).compareTo(v) == 0).as("Expected " + version + " but got " + mVersion).isTrue();
 	        }  
         }
     }
@@ -167,25 +163,25 @@ public class BundleManifestValidator implements Validator {
      * 3. otherwise, set it to 2.
      */
     public void validateBundleManifestVersion() throws Exception {
-        assertNotNull(this.dictionary);
+        assertThat(this.dictionary).isNotNull();
         
         log("verify Bundle-ManifestVersion exists and >=2");
         if (this.debug) {
             log(Constants.BUNDLE_MANIFESTVERSION + " is " + this.dictionary.get(Constants.BUNDLE_MANIFESTVERSION));
         }       
-        assertNotNull(this.dictionary.get(Constants.BUNDLE_MANIFESTVERSION));
-        assertTrue((Integer.parseInt(this.dictionary.get(Constants.BUNDLE_MANIFESTVERSION))) >= 2);
+        assertThat(this.dictionary.get(Constants.BUNDLE_MANIFESTVERSION)).isNotNull();
+        assertThat(Integer.parseInt(this.dictionary.get(Constants.BUNDLE_MANIFESTVERSION))).isGreaterThanOrEqualTo(2);
         
         // dVersion - deployer specified Bundle-Version value
         Object dVersion = this.deployOptions == null ? null : this.deployOptions.get(Constants.BUNDLE_MANIFESTVERSION);
         // mVersion - manifest Bundle-Version value
         Object mVersion = this.manifest == null ? null : this.manifest.getMainAttributes().getValue(new Name(Constants.BUNDLE_MANIFESTVERSION));
         if (dVersion != null) {
-            assertEquals((String)dVersion, this.dictionary.get(Constants.BUNDLE_MANIFESTVERSION));
+            assertThat(this.dictionary.get(Constants.BUNDLE_MANIFESTVERSION)).isEqualTo((String)dVersion);
         } else if (mVersion !=null) {
-            assertEquals((String)mVersion, this.dictionary.get(Constants.BUNDLE_MANIFESTVERSION));
+            assertThat(this.dictionary.get(Constants.BUNDLE_MANIFESTVERSION)).isEqualTo((String)mVersion);
         } else {
-            assertEquals("2", this.dictionary.get(Constants.BUNDLE_MANIFESTVERSION));
+            assertThat(this.dictionary.get(Constants.BUNDLE_MANIFESTVERSION)).isEqualTo("2");
         }
         
     }
@@ -198,7 +194,7 @@ public class BundleManifestValidator implements Validator {
      * 3. append any Bundle-ClassPath deploy options
      */
     public void validateBundleClassPath() throws Exception {
-        assertNotNull(this.dictionary);
+        assertThat(this.dictionary).isNotNull();
         
         // verify Bundle-ClassPath exists
         log("verify Bundle-ClasaPath exists");
@@ -206,7 +202,7 @@ public class BundleManifestValidator implements Validator {
         if (this.debug) {
             log(Constants.BUNDLE_CLASSPATH + " is " + actualClassPath);
         }
-        assertNotNull(actualClassPath);
+        assertThat(actualClassPath).isNotNull();
         String[] actualClassPathArray = toArray(actualClassPath);
 
         // mClasspath - original manifest classpath String
@@ -218,7 +214,7 @@ public class BundleManifestValidator implements Validator {
 		@SuppressWarnings("unused")
         Object dClasspath = this.deployOptions == null ? null : this.deployOptions.get(Constants.BUNDLE_CLASSPATH);
 
-        assertEquals("verify WEB-INF/classes exist in the actual classpath and is the first entry", WEBINFCLASSES, actualClassPathArray[0]);
+        assertThat(actualClassPathArray[0]).as("verify WEB-INF/classes exist in the actual classpath and is the first entry").isEqualTo(WEBINFCLASSES);
         // verify WEB-INF/lib jars exist in the actual classpath
 		Enumeration<URL> e = this.b.findEntries(WEBINFLIB, "*.jar", false);
         int count = 0;
@@ -229,17 +225,17 @@ public class BundleManifestValidator implements Validator {
             if (url.getFile().startsWith("/")) {
                 jarPath = url.getFile().substring(1);
             } 
-            assertTrue("verify WEB-INF/lib jars exist in the actual classpath", exist(jarPath, actualClassPathArray, false));
+            assertThat(exist(jarPath, actualClassPathArray, false)).as("verify WEB-INF/lib jars exist in the actual classpath").isTrue();
 
             count++;
         }
         
         // verify no other path gets added to the Bundle-Classpath, the following should be true unless one of the jar 
         // in the lib dir contains a Class-Path entry in the manifest.
-        assertEquals("verify no other path gets added to the Bundle-Classpath", count + 1, actualClassPathArray.length);
+        assertThat(actualClassPathArray.length).as("verify no other path gets added to the Bundle-Classpath").isEqualTo(count + 1);
         
         // verify no dups on the classpath
-        assertTrue(!containDuplicate(actualClassPathArray));
+        assertThat(containDuplicate(actualClassPathArray)).isFalse();
     }
     
     /*
@@ -249,13 +245,13 @@ public class BundleManifestValidator implements Validator {
      * also verify deploy options should overwrite original manifest options.
      */
     public void validateImportPackage() throws Exception {
-        assertNotNull(this.dictionary);
+        assertThat(this.dictionary).isNotNull();
         String actualImports = this.dictionary.get(Constants.IMPORT_PACKAGE);
         // verify Import-package exists
         if (this.debug) {
             log(Constants.IMPORT_PACKAGE + " is " + actualImports);
         }
-        assertNotNull(actualImports);
+        assertThat(actualImports).isNotNull();
         String[] actualImportsArray = toArray(actualImports);
         
         // mImports - original manifest Import-Package String array
@@ -276,7 +272,7 @@ public class BundleManifestValidator implements Validator {
         if (dImports != null) {
             String[] di = (String[])dImports;
             for (int i = 0; i < di.length ; i++) {
-                assertTrue("check Import-package url param value " + di[i] + " in actual import-package " + actualImports, existLoose(di[i], actualImportsArray));
+                assertThat(existLoose(di[i], actualImportsArray)).as("check Import-package url param value " + di[i] + " in actual import-package " + actualImports).isTrue();
             }
         }
         
@@ -295,7 +291,7 @@ public class BundleManifestValidator implements Validator {
         }*/
         
         // verify no dups on the Import-Package list
-        assertTrue(!containDuplicate(actualImportsArray));
+        assertThat(containDuplicate(actualImportsArray)).isFalse();
     }
     
     /*
@@ -310,7 +306,7 @@ public class BundleManifestValidator implements Validator {
         if (this.debug) {
             log(WEB_CONTEXT_PATH + " is " + this.dictionary.get(WEB_CONTEXT_PATH));
         }
-        assertNotNull(this.dictionary.get(WEB_CONTEXT_PATH));
+        assertThat(this.dictionary.get(WEB_CONTEXT_PATH)).isNotNull();
         
         // dWebContextPath - deployer specified Web-ContextPath value
         Object dWebContextPath = this.deployOptions == null ? null : this.deployOptions.get(WEB_CONTEXT_PATH);
@@ -320,9 +316,9 @@ public class BundleManifestValidator implements Validator {
         // mWebContextPath - manifest Web-ContextPath value
         Object mWebContextPath = this.manifest == null ? null : this.manifest.getMainAttributes().getValue(new Name(WEB_CONTEXT_PATH));
         if (dWebContextPath != null) {
-            assertEquals("Expected web context path from URL params is " + correctWebContextPath, correctWebContextPath, this.dictionary.get(WEB_CONTEXT_PATH));
+            assertThat(this.dictionary.get(WEB_CONTEXT_PATH)).as("Expected web context path from URL params is " + correctWebContextPath).isEqualTo(correctWebContextPath);
         } else if (mWebContextPath !=null) {
-            assertEquals("Expected web context path from manifest is " + (String)mWebContextPath, (String)mWebContextPath, this.dictionary.get(WEB_CONTEXT_PATH));
+            assertThat(this.dictionary.get(WEB_CONTEXT_PATH)).as("Expected web context path from manifest is " + (String)mWebContextPath).isEqualTo((String)mWebContextPath);
         }
         // TODO: verify Web-ContextPath is unique on the server
     }
@@ -355,16 +351,10 @@ public class BundleManifestValidator implements Validator {
                 log("from bundle headers " + key + ": " + this.dictionary.get(key.toString()));
 				if (key.toString().equals("version")) {
                     // we need to make sure version=1.0 and version=1.0.0 are the same
-					assertEquals(
-							"checking if other attributes from original manifest is preserved",
-							Version.parseVersion(attributes.getValue(key)),
-							Version.parseVersion(
-									this.dictionary.get(key.toString())));
+					assertThat(Version.parseVersion(
+									this.dictionary.get(key.toString()))).as("checking if other attributes from original manifest is preserved").isEqualTo(Version.parseVersion(attributes.getValue(key)));
                 } else {
-					assertEquals(
-							"checking if other attributes from original manifest is preserved",
-							attributes.getValue(key),
-							this.dictionary.get(key.toString()));
+					assertThat(this.dictionary.get(key.toString())).as("checking if other attributes from original manifest is preserved").isEqualTo(attributes.getValue(key));
                 }
             }
         }

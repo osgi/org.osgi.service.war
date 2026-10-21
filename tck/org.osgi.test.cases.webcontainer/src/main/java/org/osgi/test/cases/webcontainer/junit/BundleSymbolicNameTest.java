@@ -17,17 +17,20 @@
  *******************************************************************************/
 package org.osgi.test.cases.webcontainer.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Manifest;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.test.cases.webcontainer.util.ManifestHeadersTestBundleControl;
+import org.osgi.test.cases.webcontainer.util.OSGiTestCaseProperties;
 import org.osgi.test.cases.webcontainer.util.validate.BundleManifestValidator;
-import org.osgi.test.support.OSGiTestCaseProperties;
-import org.osgi.test.support.sleep.Sleep;
 
 /**
  * @version $Rev$ $Date$
@@ -50,6 +53,7 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Bundle-SymbolicName
      */
+    @Test
     public void testBundleSymbolicName001() throws Exception {
         final Map<String, Object> options = createOptions(SYMBOLICNAME1, null, "/tw1");
         this.b = super.installWar(options, "tw1.war", false);
@@ -61,6 +65,7 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
      * verify valid deployOptions overwrite original manifest Bundle-SymbolicName
      * test case insensitive
      */
+    @Test
     public void testBundleSymbolicName001_1() throws Exception {
         final Map<String, Object> options = new HashMap<String, Object>();
         options.put("BUNDLE-SYMBOLICNAME", SYMBOLICNAME1);
@@ -75,6 +80,7 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Bundle-SymbolicName
      */
+    @Test
     public void testBundleSymbolicName004() throws Exception {
         final Map<String, Object> options = createOptions(SYMBOLICNAME4, null, "/tw4");
         this.b = super.installWar(options, "tw4.war", false);
@@ -85,6 +91,7 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Bundle-SymbolicName
      */
+    @Test
     public void testBundleSymbolicName005() throws Exception {
         final Map<String, Object> options = createOptions(SYMBOLICNAME5, null, "/tw5");
         this.b = super.installWar(options, "tw5.war", false);
@@ -94,6 +101,7 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Bundle-SymbolicName
      */
+    @Test
     public void testBundleSymbolicName006() throws Exception {
         final Map<String, Object> options = createOptions(null, null, "/tw1-testsymbolicName006");
         this.b = super.installWar(options, "wmtw1.war", false);
@@ -103,6 +111,7 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Bundle-SymbolicName
      */
+    @Test
     public void testBundleSymbolicName009() throws Exception {
         final Map<String, Object> options = createOptions(SYMBOLICNAME4, null, "/tw4");
         try {
@@ -112,7 +121,7 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
             // expected since this is a bundle
         }
 
-        assertFalse("should not be able to access page", super.ableAccessPath("/tw4"));
+        assertThat(super.ableAccessPath("/tw4")).as("should not be able to access page").isFalse();
 
     }
 
@@ -120,6 +129,7 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Bundle-SymbolicName
      */
+    @Test
     public void testBundleSymbolicName010() throws Exception {
         final Map<String, Object> options = createOptions(SYMBOLICNAME5, null, "/tw5");
         try {
@@ -129,19 +139,20 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
             // expected since this is a bundle
         }
 
-        assertFalse("should not be able to access page", super.ableAccessPath("/tw5"));
+        assertThat(super.ableAccessPath("/tw5")).as("should not be able to access page").isFalse();
 
     }
 
     /*
      * verify Bundle-SymbolicName and Bundle-Version has to be unique
      */
+    @Test
     public void testBundleSymbolicNameError001() throws Exception {
         final Map<String, Object> options = createOptions(SYMBOLICNAME1, VERSION10, "/tw1");
         this.b = super.installWar(options, "tw1.war", true);
         super.generalHeadersTest(options, "tw1.war", true, this.b);
 
-        log("attempt to install war file: tw4.war at context path /tw4");
+        System.out.println("attempt to install war file: tw4.war at context path /tw4");
         Bundle b2 = null;
 
         try {
@@ -153,20 +164,20 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
             } catch (BundleException be) {
                 // expected
             }
-            assertNull("Bundle b2 should be null", b2);
+            assertThat(b2).as("Bundle b2 should be null").isNull();
 
             // test unable to access /tw3 yet as it is not installed
-            assertFalse("should not be able to access /tw4", super.ableAccessPath("/tw4/"));
+            assertThat(super.ableAccessPath("/tw4/")).as("should not be able to access /tw4").isFalse();
 
             // try let the system to generate a symbolic name
             final Map<String, Object> options3 = createOptions(null, VERSION10, "/tw4");
-            log("2nd attempt to install war file: tw4.war at context path /tw4");
+            System.out.println("2nd attempt to install war file: tw4.war at context path /tw4");
             try {
                 b2 = installBundle(super.getWarURL("tw4.war", options3), true);
             } catch (Exception e) {
                 fail("bundle install should succeed. " + e.getCause());
             }
-            assertNotNull("Bundle b should not be null", b2);
+            assertThat(b2).as("Bundle b should not be null").isNotNull();
 
             // check manifest generated correctly
             BundleManifestValidator validator = new BundleManifestValidator(b,
@@ -183,8 +194,7 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
 
             // test able to access /tw4
             try {
-                assertTrue("check the web context path /tw4 in service registry",
-                        super.checkServiceRegistered("/tw4"));
+                assertThat(super.checkServiceRegistered("/tw4")).as("check the web context path /tw4 in service registry").isTrue();
                 String response = super.getResponse("/tw4/");
                 super.checkTW4HomeResponse(response);
             } catch (Exception e) {
@@ -200,6 +210,7 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
     /*
      * verify SymbolicName has to be unique with 6 bundles
      */
+    @Test
     public void testMultipleBundleSymbolicName001() throws Exception {
 
         Map<String, Object> options = createOptions(SYMBOLICNAME1, null, "/tw1");
@@ -229,8 +240,8 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
             options = createOptions(null, null, "/wmtw5");
             bundles[4] = super.installWar(options, "wmtw5.war", true);
             // this won't work  as wmtw5.war is not a valid wab
-            assertFalse("should not be able to access " + WEBCONTEXTPATH5 + "/BundleContextTestServlet", super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/BundleCOntextTestServlet"));
-            assertFalse("should not be able to access " + WEBCONTEXTPATH5 + "/ClasspathTestServlet", super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/ClasspathTestServlet"));
+            assertThat(super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/BundleCOntextTestServlet")).as("should not be able to access " + WEBCONTEXTPATH5 + "/BundleContextTestServlet").isFalse();
+            assertThat(super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/ClasspathTestServlet")).as("should not be able to access " + WEBCONTEXTPATH5 + "/ClasspathTestServlet").isFalse();
         } finally {
             for (int i = 0; i < bundles.length; i++) {
                 if (bundles[i] != null) {
@@ -238,7 +249,7 @@ public class BundleSymbolicNameTest extends ManifestHeadersTestBundleControl {
                 }
             }
             // let's wait some time for the bundle to be uninstalled fully
-			Sleep.sleep(OSGiTestCaseProperties.getTimeout()
+			Thread.sleep(OSGiTestCaseProperties.getTimeout()
 					* OSGiTestCaseProperties.getScaling());
         }
     }

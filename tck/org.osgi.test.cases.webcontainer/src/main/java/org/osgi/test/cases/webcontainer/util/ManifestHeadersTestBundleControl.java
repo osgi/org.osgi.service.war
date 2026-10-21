@@ -17,6 +17,10 @@
  *******************************************************************************/
 package org.osgi.test.cases.webcontainer.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.osgi.test.assertj.bundle.BundleAssert.assertThat;
+
 import java.util.Map;
 import java.util.jar.Manifest;
 
@@ -91,10 +95,10 @@ public abstract class ManifestHeadersTestBundleControl extends
 
         bundle.stop();
         // test unable to access pathes yet as it is not started
-        assertTrue("Bundle status should be Installed or Resolved but not Active", Bundle.RESOLVED == bundle.getState() 
-        		||  Bundle.INSTALLED == bundle.getState());
-        assertFalse("Bundle not started yet - should not be able to access "
-                + cp, super.ableAccessPath(cp));
+        assertThat(Bundle.RESOLVED == bundle.getState() 
+        		||  Bundle.INSTALLED == bundle.getState()).as("Bundle status should be Installed or Resolved but not Active").isTrue();
+        assertThat(super.ableAccessPath(cp)).as("Bundle not started yet - should not be able to access "
+                + cp).isFalse();
 
         if (start) {
             bundle.start();
@@ -111,7 +115,7 @@ public abstract class ManifestHeadersTestBundleControl extends
         String cp = options.get(WEB_CONTEXT_PATH) == null ? null
                 : (String) options.get(WEB_CONTEXT_PATH);
         
-        assertNotNull("Bundle bundle should not be null", bundle);
+        assertThat(bundle).as("Bundle bundle should not be null").isNotNull();
         Manifest originalManifest = super.getManifestFromWarName(warName);
 
         // check manifest generated correctly
@@ -137,23 +141,22 @@ public abstract class ManifestHeadersTestBundleControl extends
 
         if (!start) {
             // test unable to access pathes yet as it is not started
-            assertTrue("Bundle status should be Installed or Resolved but not Active", Bundle.RESOLVED == bundle.getState() 
-                    ||  Bundle.INSTALLED == bundle.getState());
-            assertFalse(
-                    "Bundle not started yet - should not be able to access "
-                            + cp, super.ableAccessPath(cp));
+            assertThat(Bundle.RESOLVED == bundle.getState() 
+                    ||  Bundle.INSTALLED == bundle.getState()).as("Bundle status should be Installed or Resolved but not Active").isTrue();
+            assertThat(super.ableAccessPath(cp)).as("Bundle not started yet - should not be able to access "
+                            + cp).isFalse();
             bundle.start();
             
         }
 
-        assertEquals("Bundle status should be Active", Bundle.ACTIVE, bundle.getState());
+        assertThat(bundle).as("Bundle status should be Active").isInState(Bundle.ACTIVE);
 
         // make sure we don't run tests until the servletcontext is registered with service registry
         boolean register = super.checkServiceRegistered(cp);
-        assertTrue("the ServletContext should be registered", register);
+        assertThat(register).as("the ServletContext should be registered").isTrue();
         
         // rough test able to access the app
-        assertTrue("should be able to access " + cp, super.ableAccessPath(cp));
+        assertThat(super.ableAccessPath(cp)).as("should be able to access " + cp).isTrue();
 
         try {
             // validate able to get Response of the home page and some dynamic page 
@@ -174,8 +177,8 @@ public abstract class ManifestHeadersTestBundleControl extends
         super.checkServiceRegistered(cp);
         final String request = cp + "/ClasspathTestServlet";
         String response = super.getResponse(request);
-        assertEquals("checking response content", "<html><head><title>ClasspathTestServlet</title></head><body>" 
-                + ConstantsUtil.ABLEGETLOG + "<br/>" +  ConstantsUtil.ABLEGETSIMPLEHELLO + "<br/></body></html>", response);
+        assertThat(response).as("checking response content").isEqualTo("<html><head><title>ClasspathTestServlet</title></head><body>" 
+                + ConstantsUtil.ABLEGETLOG + "<br/>" +  ConstantsUtil.ABLEGETSIMPLEHELLO + "<br/></body></html>");
     }
 
 }

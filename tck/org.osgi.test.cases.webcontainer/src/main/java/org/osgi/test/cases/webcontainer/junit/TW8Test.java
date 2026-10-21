@@ -17,8 +17,13 @@
  *******************************************************************************/
 package org.osgi.test.cases.webcontainer.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.jar.Manifest;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.test.cases.webcontainer.util.ConstantsUtil;
@@ -37,17 +42,18 @@ public class TW8Test extends WebContainerTestBundleControl {
     private Bundle fragmentBundle;
 
     @Override
+	@BeforeEach
 	public void setUp() throws Exception {
         super.setUp();
         super.prepare("/tw8");
 
         // install the war file.
-        log("install war file: tw8.war at context path " + this.warContextPath);
+        System.out.println("install war file: tw8.war at context path " + this.warContextPath);
         this.options.put(Constants.IMPORT_PACKAGE, IMPORTS_OSGI_FRAMEWORK);
         this.options.put(Constants.BUNDLE_SYMBOLICNAME, TW8_SYMBOLIC_NAME);
         String loc = super.getWarURL("tw8.war", this.options);
         if (this.debug) {
-            log("bundleName to be passed into installBundle is " + loc);
+            System.out.println("bundleName to be passed into installBundle is " + loc);
         }
         this.b = installBundle(loc, false);
 
@@ -59,10 +65,11 @@ public class TW8Test extends WebContainerTestBundleControl {
 		// make sure we don't run tests until the servletcontext is registered
 		// with service registry
         boolean register = super.checkServiceRegistered(this.warContextPath);
-        assertTrue("the ServletContext should be registered", register);
+        assertThat(register).as("the ServletContext should be registered").isTrue();
     }
 
     @Override
+	@AfterEach
 	public void tearDown() throws Exception {
 		uninstallBundle(fragmentBundle);
         super.tearDown();
@@ -72,6 +79,7 @@ public class TW8Test extends WebContainerTestBundleControl {
      * set deployOptions to null to rely on the web container service to
      * generate the manifest
      */
+    @Test
     public void testBundleManifest() throws Exception {
 		Manifest originalManifest = super.getManifest("/tw8.war");
         BundleManifestValidator validator = new BundleManifestValidator(this.b,
@@ -79,64 +87,69 @@ public class TW8Test extends WebContainerTestBundleControl {
         validator.validate();
     }
 
+	@Test
 	public void testContext001() throws Exception {
 		final String request = this.warContextPath
 				+ "/BundleContextTestServlet";
 		String response = super.getResponse(request);
 		// check if content of response is correct
-		log("verify content of response is correct");
-		assertTrue(response.indexOf("BundleContextTestServlet") > 0);
-		assertTrue(response.indexOf(Constants.BUNDLE_SYMBOLICNAME + ": "
-				+ b.getSymbolicName()) > 0);
-		assertEquals(-1, response.indexOf("null"));
+		System.out.println("verify content of response is correct");
+        assertThat(response.indexOf("BundleContextTestServlet")).isGreaterThan(0);
+        assertThat(response.indexOf(Constants.BUNDLE_SYMBOLICNAME + ": "
+                + b.getSymbolicName())).isGreaterThan(0);
+		assertThat(response.indexOf("null")).isEqualTo(-1);
 	}
 
+	@Test
 	public void testContext002() throws Exception {
 		final String request = this.warContextPath
 				+ "/BundleContextTestServlet?log=2";
 		String response = super.getResponse(request);
 		// check if content of response is correct
-		log("verify content of response is correct");
-		assertTrue(response.indexOf("BundleContextTestServlet") > 0);
-		assertTrue(response.indexOf("Bundle-Id: " + b.getBundleId()) > 0);
-		assertEquals(-1, response.indexOf("null"));
+		System.out.println("verify content of response is correct");
+        assertThat(response.indexOf("BundleContextTestServlet")).isGreaterThan(0);
+        assertThat(response.indexOf("Bundle-Id: " + b.getBundleId())).isGreaterThan(0);
+		assertThat(response.indexOf("null")).isEqualTo(-1);
 	}
 
+	@Test
 	public void testContext003() throws Exception {
 		final String request = this.warContextPath
 				+ "/BundleContextTestServlet?log=3";
 		String response = super.getResponse(request);
 
 		// check if content of response is correct
-		log("verify content of response is correct");
-		assertTrue(response.indexOf("BundleContextTestServlet") > 0);
-		assertTrue(response.indexOf("Bundle-LastModified: "
-				+ b.getLastModified()) > 0);
-		assertEquals(-1, response.indexOf("null"));
+		System.out.println("verify content of response is correct");
+        assertThat(response.indexOf("BundleContextTestServlet")).isGreaterThan(0);
+        assertThat(response.indexOf("Bundle-LastModified: "
+                + b.getLastModified())).isGreaterThan(0);
+		assertThat(response.indexOf("null")).isEqualTo(-1);
 	}
 
+	@Test
 	public void testContext004() throws Exception {
 		final String request = this.warContextPath
 				+ "/BundleContextTestServlet?log=4";
 		String response = super.getResponse(request);
 
 		// check if content of response is correct
-		log("verify content of response is correct");
-		assertTrue(response.indexOf("BundleContextTestServlet") > 0);
-		assertTrue(response.indexOf(Constants.BUNDLE_VERSION + ": "
-				+ b.getVersion().toString()) > 0);
-		assertEquals(-1, response.indexOf("null"));
+		System.out.println("verify content of response is correct");
+        assertThat(response.indexOf("BundleContextTestServlet")).isGreaterThan(0);
+        assertThat(response.indexOf(Constants.BUNDLE_VERSION + ": "
+                + b.getVersion().toString())).isGreaterThan(0);
+		assertThat(response.indexOf("null")).isEqualTo(-1);
 	}
 
     /*
      * test ClasspathTestServlet
      */
+    @Test
     public void testClasspassServlet() throws Exception {
         final String request = this.warContextPath
         + "/ClasspathTestServlet";
         String response = super.getResponse(request);
-        assertEquals("checking response content", "<html><head><title>ClasspathTestServlet</title></head><body>"
-                + ConstantsUtil.ABLEGETLOG + "<br/>" +  ConstantsUtil.ABLEGETSIMPLEHELLO + "<br/></body></html>", response);
+        assertThat(response).as("checking response content").isEqualTo("<html><head><title>ClasspathTestServlet</title></head><body>"
+                + ConstantsUtil.ABLEGETLOG + "<br/>" +  ConstantsUtil.ABLEGETSIMPLEHELLO + "<br/></body></html>");
     }
 
 }

@@ -17,9 +17,13 @@
  *******************************************************************************/
 package org.osgi.test.cases.webcontainer.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.test.cases.webcontainer.util.ManifestHeadersTestBundleControl;
@@ -43,6 +47,7 @@ public class BundleManifestVersionTest extends ManifestHeadersTestBundleControl 
      * verify valid deployOptions overwrite original manifest
      * Bundle-ManifestVersion
      */
+    @Test
     public void testBundleManifestVersion001() throws Exception {
         final Map<String, Object> options = createOptions(MANIFESTVERSION1, "/tw1");
         this.b = super.installWar(options, "tw1.war", false);
@@ -53,6 +58,7 @@ public class BundleManifestVersionTest extends ManifestHeadersTestBundleControl 
      * verify valid deployOptions overwrite original manifest
      * Bundle-ManifestVersion.  test case insensitive
      */
+    @Test
     public void testBundleManifestVersion001_1() throws Exception {
         final Map<String, Object> options = new HashMap<String, Object>();
         options.put("BUNDLE-MANIFESTVERSION", MANIFESTVERSION1);
@@ -67,6 +73,7 @@ public class BundleManifestVersionTest extends ManifestHeadersTestBundleControl 
      * verify valid deployOptions overwrite original manifest
      * Bundle-ManifestVersion
      */
+    @Test
     public void testBundleManifestVersion004() throws Exception {
         final Map<String, Object> options = createOptions(MANIFESTVERSION1, "/tw4");
         this.b = super.installWar(options, "tw4.war", false);
@@ -77,6 +84,7 @@ public class BundleManifestVersionTest extends ManifestHeadersTestBundleControl 
      * verify valid deployOptions overwrite original manifest
      * Bundle-ManifestVersion
      */
+    @Test
     public void testBundleManifestVersion005() throws Exception {
         final Map<String, Object> options = createOptions(MANIFESTVERSION1,
                 "/tw5");
@@ -87,7 +95,7 @@ public class BundleManifestVersionTest extends ManifestHeadersTestBundleControl 
             // expected since this is a bundle
         }
         
-        assertFalse("should not be able to access page", super.ableAccessPath("/tw5"));
+        assertThat(super.ableAccessPath("/tw5")).as("should not be able to access page").isFalse();
 
     }
     
@@ -95,6 +103,7 @@ public class BundleManifestVersionTest extends ManifestHeadersTestBundleControl 
      * verify valid deployOptions overwrite original manifest
      * Bundle-ManifestVersion
      */
+    @Test
     public void testBundleManifestVersion006() throws Exception {
         final Map<String, Object> options = createOptions(MANIFESTVERSION1, "/tw1");
         try {
@@ -104,28 +113,30 @@ public class BundleManifestVersionTest extends ManifestHeadersTestBundleControl 
             // expected since this is a bundle
         }
         
-        assertFalse("should not be able to access page", super.ableAccessPath("/tw1"));
+        assertThat(super.ableAccessPath("/tw1")).as("should not be able to access page").isFalse();
 
     }
     
     /*
      * verify null bundle-manifestVersion
      */
+    @Test
     public void testBundleManifestVersion011() throws Exception {
         final Map<String, Object> options = createOptions(null, "/tw5");
         this.b = super.installWar(options, "wmtw5.war", false);
         
-        assertFalse("should not be able to access page", super.ableAccessPath("/tw5"));
+        assertThat(super.ableAccessPath("/tw5")).as("should not be able to access page").isFalse();
     }
 
     /*
      * verify invalid Bundle-ManifestVersion in deployOptions
      */
+    @Test
     public void testBundleManifestVersionError001() throws Exception {
         // specify install options
         final Map<String, Object> options = createOptions(MANIFESTVERSION3, "/tw1");
         // install the war file
-        log("install war file: tw1.war at context path /tw1");
+        System.out.println("install war file: tw1.war at context path /tw1");
         try {
             this.b = installBundle(super.getWarURL("tw1.war", options), true);
             fail("bundle install should fail: " + Constants.BUNDLE_MANIFESTVERSION
@@ -133,24 +144,25 @@ public class BundleManifestVersionTest extends ManifestHeadersTestBundleControl 
         } catch (BundleException be) {
             // expected unless the framework supports Bundle-ManifestVersion
             // greater than 2
-            log("this is expected if the framework doesn't support the "
+            System.out.println("this is expected if the framework doesn't support the "
                     + Constants.BUNDLE_MANIFESTVERSION + " = " + MANIFESTVERSION3);
         }
-        assertNull("Bundle b should be null", this.b);
+        assertThat(this.b).as("Bundle b should be null").isNull();
 
         // test unable to access /tw2 yet as it is not started
-        assertFalse("should not be able to access /tw1", super
-                .ableAccessPath("/tw1/"));
+        assertThat(super
+                .ableAccessPath("/tw1/")).as("should not be able to access /tw1").isFalse();
     }
 
     /*
      * verify invalid Bundle-ManifestVersion in deployOptions
      */
+    @Test
     public void testBundleManifestVersionError002() throws Exception {
         // specify install options
         final Map<String, Object> options = createOptions(MANIFESTVERSION3, "/tw4");
         // install the war file
-        log("install and start war file: tw4.war at context path /tw4");
+        System.out.println("install and start war file: tw4.war at context path /tw4");
         try {
             this.b = installBundle(super.getWarURL("tw4.war", options), false);
             fail("bundle install should fail: " + Constants.BUNDLE_MANIFESTVERSION
@@ -158,10 +170,10 @@ public class BundleManifestVersionTest extends ManifestHeadersTestBundleControl 
         } catch (BundleException be) {
             // expected;
         }
-        assertNull("Bundle b should be null", this.b);
+        assertThat(this.b).as("Bundle b should be null").isNull();
 
         // test unable to access /tw3 yet as it is not started
-        assertFalse("should not be able to access /tw4", super
-                .ableAccessPath("/tw4/"));
+        assertThat(super
+                .ableAccessPath("/tw4/")).as("should not be able to access /tw4").isFalse();
     }
 }

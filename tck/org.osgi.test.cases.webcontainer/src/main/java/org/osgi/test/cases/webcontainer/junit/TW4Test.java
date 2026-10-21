@@ -17,6 +17,8 @@
  *******************************************************************************/
 package org.osgi.test.cases.webcontainer.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -24,6 +26,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.jar.Manifest;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.test.cases.webcontainer.util.ConstantsUtil;
 import org.osgi.test.cases.webcontainer.util.Dispatcher;
 import org.osgi.test.cases.webcontainer.util.WebContainerTestBundleControl;
@@ -37,26 +41,28 @@ import org.osgi.test.cases.webcontainer.util.validate.BundleManifestValidator;
 public class TW4Test extends WebContainerTestBundleControl {
 
 	@Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         super.prepare("/tw4");
         // install + start the war file
-        log("install war file: tw4.war at context path " + this.warContextPath);
+        System.out.println("install war file: tw4.war at context path " + this.warContextPath);
         String loc = super.getWarURL("tw4.war", this.options);
         if (this.debug) {
-            log("bundleName to be passed into installBundle is " + loc);	
+            System.out.println("bundleName to be passed into installBundle is " + loc);	
         }
         this.b = installBundle(loc, true);
         
         // make sure we don't run tests until the servletcontext is registered with service registry
         boolean register = super.checkServiceRegistered(this.warContextPath);
-        assertTrue("the ServletContext should be registered", register);
+        assertThat(register).as("the ServletContext should be registered").isTrue();
     }
 
     /*
      * set deployOptions to null to rely on the web container service to
      * generate the manifest
      */
+    @Test
     public void testBundleManifest() throws Exception {
 		Manifest originalManifest = super.getManifest("/tw4.war");
         BundleManifestValidator validator = new BundleManifestValidator(this.b,
@@ -67,6 +73,7 @@ public class TW4Test extends WebContainerTestBundleControl {
     /*
      * test home page
      */
+    @Test
     public void testHome() throws Exception {
         final String request = this.warContextPath + "/";
         String response = super.getResponse(request);
@@ -76,20 +83,21 @@ public class TW4Test extends WebContainerTestBundleControl {
     /*
      * test empty doGet
      */
+    @Test
     public void testEmptyDoGet() throws Exception {
         final String request = this.warContextPath + "/TestServlet1";
         final URL url = Dispatcher.createURL(request, this.server);
         final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         try {
-            assertEquals(200, conn.getResponseCode());
-            assertEquals(null, conn.getContentType());
+            assertThat(conn.getResponseCode()).isEqualTo(200);
+            assertThat(conn.getContentType()).isNull();
             String response = Dispatcher.dispatch(conn);
             if (this.debug) {
-                log(response);
+                System.out.println(response);
             }
             // check if content of response is empty
-            log("verify content of response is correct");
-            assertEquals("", response);
+            System.out.println("verify content of response is correct");
+            assertThat(response).isEmpty();
         } finally {
             conn.disconnect();
         }
@@ -99,6 +107,7 @@ public class TW4Test extends WebContainerTestBundleControl {
      * test long parameter values - borrow these two params from
      * org.osgi.test.cases.http
      */
+    @Test
     public void testLongParams() throws Exception {
         String param1 = "param1=value1";
         String param2 = "param2=" + ConstantsUtil.PARAM2;
@@ -106,14 +115,15 @@ public class TW4Test extends WebContainerTestBundleControl {
                 + "/TestServlet1/TestServlet2?tc=1&" + param1 + "&" + param2;
         String response = super.getResponse(request);
         // check if content of response is correct
-        log("verify content of response is correct");
-        assertEquals(ConstantsUtil.TW4LONGPARAMS, response);
+        System.out.println("verify content of response is correct");
+        assertThat(response).isEqualTo(ConstantsUtil.TW4LONGPARAMS);
     }
 
     /*
      * test a few special character param values - borrow these five params from
      * org.osgi.test.cases.http
      */
+    @Test
     public void testSpecialParams() throws Exception {
         String param1 = "param1=" + URLEncoder.encode("&", "UTF-8");
         String param2 = "param2=" + URLEncoder.encode("&&", "UTF-8");
@@ -125,20 +135,21 @@ public class TW4Test extends WebContainerTestBundleControl {
                 + "&" + param3 + "&" + param4 + "&" + param5;
         String response = super.getResponse(request);
         // check if content of response is correct
-        log("verify content of response is correct");
-        assertEquals(ConstantsUtil.TW4SPECPARAMS, response);
+        System.out.println("verify content of response is correct");
+        assertThat(response).isEqualTo(ConstantsUtil.TW4SPECPARAMS);
     }
 
     /*
      * test large response 4M - borrow test from org.osgi.test.cases.http
      */
+    @Test
     public void testLargeResponse() throws Exception {
         final String request = this.warContextPath
                 + "/TestServlet1/TestServlet2/TestServlet3";
         final URL url = Dispatcher.createURL(request, this.server);
         final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         try {
-            assertEquals(200, conn.getResponseCode());
+            assertThat(conn.getResponseCode()).isEqualTo(200);
             checkContentType("text/plain", conn.getContentType());
             BufferedReader in = null;
             int bufsize = 0;
@@ -147,14 +158,14 @@ public class TW4Test extends WebContainerTestBundleControl {
 
             in = new BufferedReader(
                     new InputStreamReader(conn.getInputStream()));
-            assertNotNull(in);
+            assertThat(in).isNotNull();
             while ((len = in.read(buf, 0, buf.length)) > 0)
                 bufsize += len;
             in.close();
             // check if content of response is correct
-            log("verify content of response is correct");
-            log(bufsize + "");
-            assertEquals(4194304, bufsize);
+            System.out.println("verify content of response is correct");
+            System.out.println(bufsize + "");
+            assertThat(bufsize).isEqualTo(4194304);
         } finally {
             conn.disconnect();
         }
@@ -163,21 +174,22 @@ public class TW4Test extends WebContainerTestBundleControl {
     /*
      * test simple plain response
      */
+    @Test
     public void testPlainResponse() throws Exception {
         final String request = this.warContextPath
                 + "/TestServlet1/TestServlet2/TestServlet3/TestServlet4?type=plain";
         final URL url = Dispatcher.createURL(request, this.server);
         final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         try {
-            assertEquals(200, conn.getResponseCode());
+            assertThat(conn.getResponseCode()).isEqualTo(200);
             checkContentType("text/plain", conn.getContentType());
             String response = Dispatcher.dispatch(conn);
             if (this.debug) {
-                log(response);
+                System.out.println(response);
             }
             // check if content of response is correct
-            log("verify content of response is correct");
-            assertEquals(ConstantsUtil.PLAINRESPONSE, response);
+            System.out.println("verify content of response is correct");
+            assertThat(response).isEqualTo(ConstantsUtil.PLAINRESPONSE);
         } finally {
             conn.disconnect();
         }
@@ -186,26 +198,28 @@ public class TW4Test extends WebContainerTestBundleControl {
     /*
      * test simple html response
      */
+    @Test
     public void testHTMLResponse() throws Exception {
         final String request = this.warContextPath
                 + "/TestServlet1/TestServlet2/TestServlet3/TestServlet4?type=html";
         String response = super.getResponse(request);
         // check if content of response is correct
-        log("verify content of response is correct");
-        assertEquals(ConstantsUtil.HTMLRESPONSE, response);
+        System.out.println("verify content of response is correct");
+        assertThat(response).isEqualTo(ConstantsUtil.HTMLRESPONSE);
     }
 
     /*
      * test simple image/jpeg response
      */
+    @Test
     public void testJPGResponse() throws Exception {
         final String request = this.warContextPath
                 + "/TestServlet1/TestServlet2/TestServlet3/TestServlet4?type=jpg";
         final URL url = Dispatcher.createURL(request, this.server);
         final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         try {
-            assertEquals(200, conn.getResponseCode());
-            assertEquals("image/jpeg", conn.getContentType());
+            assertThat(conn.getResponseCode()).isEqualTo(200);
+            assertThat(conn.getContentType()).isEqualTo("image/jpeg");
         } finally {
             conn.disconnect();
         }

@@ -17,20 +17,24 @@
  *******************************************************************************/
 package org.osgi.test.cases.webcontainer.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.osgi.test.assertj.bundle.BundleAssert.assertThat;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Manifest;
 
 import javax.servlet.ServletContext;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
+import org.osgi.test.cases.webcontainer.util.OSGiTestCaseProperties;
 import org.osgi.test.cases.webcontainer.util.WebContainerTestBundleControl;
 import org.osgi.test.cases.webcontainer.util.validate.BundleManifestValidator;
-import org.osgi.test.support.OSGiTestCaseProperties;
-import org.osgi.test.support.sleep.Sleep;
 
 /**
  * @version $Rev$ $Date$
@@ -46,36 +50,42 @@ public class ServletContextRegistrationTest extends
 	private final static String OSGI_WEB_VERSION = "osgi.web.version";
 	private final static String OSGI_WEB_CONTEXTPATH = "osgi.web.contextpath";
 
+	@Test
 	public void testSimpleServletContextReg001() throws Exception {
 		final Map<String, Object> option = createOptions("1.0", "ct-testwar1", "/tw1");
         this.b = super.installWar(option, "tw1.war", true);
 	    registerWarBundleTest(option, "tw1.war", true, this.b);
 	}
 
+	@Test
 	public void testSimpleServletContextReg004() throws Exception {
 		final Map<String, Object> option = createOptions("4.0", "ct-testwar4", "/tw4");
 		this.b = super.installWar(option, "tw4.war", false);
 		registerWarBundleTest(option, "tw4.war", false, this.b);
 	}
 
+	@Test
 	public void testSimpleServletContextReg005() throws Exception {
 		final Map<String, Object> option = createOptions("5.0", "ct-testwar5", "/tw5");
 		this.b = super.installWar(option, "tw5.war", true);
 		registerWarBundleTest(option, "tw5.war", true, this.b);
 	}
 
+	@Test
 	public void testSimpleServletContextReg006() throws Exception {
 		final Map<String, Object> option = createOptions(null, null, "/testSimpleServletContextReg006-tw1");
 		this.b = super.installWar(option, "tw1.war", false);
 		registerWarBundleTest(option, "tw1.war", false, this.b);
 	}
 
+	@Test
 	public void testSimpleServletContextReg009() throws Exception {
 		final Map<String, Object> option = createOptions(null, "ct-testwar9", "/testSimpleServletContextReg009-tw4");
 		this.b = super.installWar(option, "tw4.war", true);
 		registerWarBundleTest(option, "tw4.war", true, this.b);
 	}
 
+	@Test
 	public void testSimpleServletContextReg010() throws Exception {
 		final Map<String, Object> option = createOptions("1.0", null, "/tw5");
 		this.b = super.installWar(option, "tw5.war", false);
@@ -87,6 +97,7 @@ public class ServletContextRegistrationTest extends
 	 * combined can be created uniquely to identify the bundle, when some are
 	 * not specified by deploy options.
 	 */
+	@Test
 	public void testMultiServletContextReg004() throws Exception {
 
 		Map<String, Object> option = createOptions("1.0", "ct-testwar1", "/tw1");
@@ -118,7 +129,7 @@ public class ServletContextRegistrationTest extends
                 }
             }
             // let's wait some time for the bundle to be uninstalled fully
-			Sleep.sleep(OSGiTestCaseProperties.getTimeout()
+			Thread.sleep(OSGiTestCaseProperties.getTimeout()
 					* OSGiTestCaseProperties.getScaling());
         }
 
@@ -127,6 +138,7 @@ public class ServletContextRegistrationTest extends
     /*
      * verify install 100 web applications
      */
+    @Test
     public void testMultiServletContextReg005() throws Exception {
         Bundle[] bundles = new Bundle[100];
         try {
@@ -142,7 +154,7 @@ public class ServletContextRegistrationTest extends
                 }
             }
             // let's wait some time for the bundle to be uninstalled fully
-			Sleep.sleep(OSGiTestCaseProperties.getTimeout()
+			Thread.sleep(OSGiTestCaseProperties.getTimeout()
 					* OSGiTestCaseProperties.getScaling());
         }
     }
@@ -164,7 +176,7 @@ public class ServletContextRegistrationTest extends
 		ServletContext sc;
 
 		// validate the bundle
-		assertNotNull("Bundle b should not be null", bundle);
+		assertThat(bundle).as("Bundle b should not be null").isNotNull();
 		Manifest originalManifest = super.getManifestFromWarName(warName);
 		BundleManifestValidator validator = new BundleManifestValidator(bundle,
 				originalManifest, options, this.debug);
@@ -174,34 +186,29 @@ public class ServletContextRegistrationTest extends
           + bundle.getHeaders().get(Constants.BUNDLE_SYMBOLICNAME)
           + ")";
 	    if (debug) {
-	        log("filter is " + filter);
+	        System.out.println("filter is " + filter);
 	    }
 
 		if (!start) {
-			assertTrue("Bundle status should be Resolved or Installed",
-					Bundle.RESOLVED == bundle.getState() || Bundle.INSTALLED == bundle.getState());
+			assertThat(Bundle.RESOLVED == bundle.getState() || Bundle.INSTALLED == bundle.getState()).as("Bundle status should be Resolved or Installed").isTrue();
 			if (cp != null) {
-				assertFalse(
-						"Bundle not started yet - should not be able to access "
-								+ cp, super.ableAccessPath(cp));
+				assertThat(super.ableAccessPath(cp)).as("Bundle not started yet - should not be able to access "
+								+ cp).isFalse();
 			}
-			ServiceReference< ? >[] srs = getContext().getServiceReferences(
+			ServiceReference< ? >[] srs = context.getServiceReferences(
 		                ServletContext.class.getName(), filter);
-			assertNull(
-					"ServletContext service should not be present as the bundle has not been started yet",
-					srs);
+			assertThat(srs).as("ServletContext service should not be present as the bundle has not been started yet").isNull();
 			bundle.start();
 
 		}
 
 		// make sure the servletcontext is registered with service registry
-		assertTrue("ServletContext associated with Web-ContextPath " + cp + " should be registered",
-		        super.checkServiceRegistered(cp));
+		assertThat(super.checkServiceRegistered(cp)).as("ServletContext associated with Web-ContextPath " + cp + " should be registered").isTrue();
 		// get the service reference by Bundle-SymbolicName and Bundle-Version
-		ServiceReference< ? >[] srs = getContext()
+		ServiceReference< ? >[] srs = context
 				.getServiceReferences(
 				ServletContext.class.getName(), filter);
-		assertNotNull("No ServletContext services", srs);
+		assertThat(srs).as("No ServletContext services").isNotNull();
 		for (int i = 0; i < srs.length; i++) {
 			// bundle-version is optional
 			Object bv1 = bundle.getHeaders().get(Constants.BUNDLE_VERSION);
@@ -221,36 +228,35 @@ public class ServletContextRegistrationTest extends
 			}
 		}
 
-		assertNotNull(sr);
-		sc = (ServletContext) getContext().getService(sr);
-		assertEquals("check if servlet context path is correct", sr
-				.getProperty(OSGI_WEB_CONTEXTPATH), sc.getContextPath());
+		assertThat(sr).isNotNull();
+		sc = (ServletContext) context.getService(sr);
+		assertThat(sc.getContextPath()).as("check if servlet context path is correct").isEqualTo(sr
+				.getProperty(OSGI_WEB_CONTEXTPATH));
 
 		// set the content path now if it was null before
 		if (cp == null) {
 			cp = sc.getContextPath();
 		} else {
-			assertEquals(cp, sc.getContextPath());
+			assertThat(sc.getContextPath()).isEqualTo(cp);
 		}
 
 		if (debug) {
-			log("WebContext-Path is " + cp);
+			System.out.println("WebContext-Path is " + cp);
 		}
-		assertEquals(sc, getContext().getService(sr));
+		assertThat(context.getService(sr)).isEqualTo(sc);
 
 		// get the service reference by context-path
-		srs = getContext().getServiceReferences(
+		srs = context.getServiceReferences(
 				ServletContext.class.getName(),
 				"(" + OSGI_WEB_CONTEXTPATH + "="
 						+ bundle.getHeaders().get(WEB_CONTEXT_PATH) + ")");
-		assertNotNull(srs);
-		assertEquals(sc, getContext().getService(srs[0]));
+		assertThat(srs).isNotNull();
+		assertThat(context.getService(srs[0])).isEqualTo(sc);
 
 		// rough test able to access the app
-		assertTrue("should be able to access " + cp, super.ableAccessPath(cp));
+		assertThat(super.ableAccessPath(cp)).as("should be able to access " + cp).isTrue();
 
-		assertEquals("Bundle status should be Active", Bundle.ACTIVE, bundle
-				.getState());
+		assertThat(bundle).as("Bundle status should be Active").isInState(Bundle.ACTIVE);
 		try {
 			String response = super.getResponse(cp);
 			super.checkHomeResponse(response, warName);
@@ -260,19 +266,18 @@ public class ServletContextRegistrationTest extends
 
 		bundle.stop();
 		// test unable to access pathes yet as it is not started
-		assertEquals("Bundle status should be Resolved but not Active",
-				Bundle.RESOLVED, bundle.getState());
-		assertFalse("Bundle not started yet - should not be able to access "
-				+ cp, super.ableAccessPath(cp));
+		assertThat(bundle).as("Bundle status should be Resolved but not Active").isInState(Bundle.RESOLVED);
+		assertThat(super.ableAccessPath(cp)).as("Bundle not started yet - should not be able to access "
+				+ cp).isFalse();
 
-		srs = getContext().getServiceReferences(
+		srs = context.getServiceReferences(
 				ServletContext.class.getName(),
 				"("
 						+ OSGI_WEB_SYMBOLICNAME
 						+ "="
 						+ bundle.getHeaders().get(
 								Constants.BUNDLE_SYMBOLICNAME) + ")");
-		assertNull("srs should be null as the bundle has been stopped", srs);
+		assertThat(srs).as("srs should be null as the bundle has been stopped").isNull();
 
 		if (start) {
 			bundle.start();
