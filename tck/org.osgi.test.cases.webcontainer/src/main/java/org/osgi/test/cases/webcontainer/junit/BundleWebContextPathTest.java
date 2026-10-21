@@ -17,16 +17,19 @@
  *******************************************************************************/
 package org.osgi.test.cases.webcontainer.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.test.cases.webcontainer.util.ManifestHeadersTestBundleControl;
-import org.osgi.test.support.OSGiTestCaseProperties;
-import org.osgi.test.support.sleep.Sleep;
+import org.osgi.test.cases.webcontainer.util.OSGiTestCaseProperties;
 
 /**
  * @version $Rev$ $Date$
@@ -45,6 +48,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Web-ContextPath
      */
+    @Test
     public void testWebContextPath001() throws Exception {
         final Map<String, Object> options = createOptions(WEBCONTEXTPATH1);
         this.b = super.installWar(options, "tw1.war", false);
@@ -55,6 +59,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
      * verify valid deployOptions overwrite original manifest Web-ContextPath
      * test case insensitive
      */
+    @Test
     public void testWebContextPath001_1() throws Exception {
         final Map<String, Object> options = new HashMap<String, Object>();
         options.put("WEB-CONTEXTPATH", WEBCONTEXTPATH1);
@@ -67,6 +72,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Web-ContextPath
      */
+    @Test
     public void testWebContextPath004() throws Exception {
         final Map<String, Object> options = createOptions(WEBCONTEXTPATH4);
         this.b = super.installWar(options, "tw4.war", true);
@@ -76,6 +82,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Web-ContextPath
      */
+    @Test
     public void testWebContextPath005() throws Exception {
         final Map<String, Object> options = createOptions(WEBCONTEXTPATH5);
         this.b = super.installWar(options, "tw5.war", false);
@@ -85,6 +92,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Web-ContextPath
      */
+    @Test
     public void testWebContextPath006() throws Exception {
         final Map<String, Object> options = createOptions(WEBCONTEXTPATH5);
         this.b = super.installWar(options, "wmtw1.war", false);
@@ -94,6 +102,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify install a WAB directly without using webbundle url handler
      */
+    @Test
     public void testWebContextPath006_2() throws Exception {
         // for a wab, we don't need to install it via web bundle URL
         this.b = super.installBundle("wmtw1.war", true);
@@ -104,6 +113,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
      * verify install a WAB directly and passing in other web bundle url params
      * and this should result bundle exception
      */
+    @Test
     public void testWebContextPath006_3() throws Exception {
         final Map<String, Object> options = createOptions(WEBCONTEXTPATH5);
         options.put(Constants.BUNDLE_SYMBOLICNAME, "test passing in new symbolic name");
@@ -119,6 +129,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
      * verify install a WAB directly and passing in other web bundle url params
      * and this should result bundle exception
      */
+    @Test
     public void testWebContextPath006_4() throws Exception {
         final Map<String, Object> options = createOptions(null);
         options.put(Constants.BUNDLE_SYMBOLICNAME, "test passing in new symbolic name");
@@ -133,6 +144,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Web-ContextPath
      */
+    @Test
     public void testWebContextPath009() throws Exception {
 		final Map<String, Object> options = createOptions(WEBCONTEXTPATH4
 				+ "-1");
@@ -143,6 +155,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify valid deployOptions overwrite original manifest Web-ContextPath
      */
+    @Test
     public void testWebContextPath009_2() throws Exception {
         final Map<String, Object> options = createOptions(WEBCONTEXTPATH4);
 		options.put(Constants.BUNDLE_SYMBOLICNAME, "OSGi TCK test wmtw4");
@@ -152,31 +165,33 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
         } catch (BundleException e){
             // expected since this is a bundle
         }
-        assertFalse("should not be able to access page", super.ableAccessPath(WEBCONTEXTPATH4));
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH4)).as("should not be able to access page").isFalse();
 
     }
 
     /*
      * verify valid deployOptions overwrite original manifest Web-ContextPath
      */
+    @Test
     public void testWebContextPath010() throws Exception {
         // 128.4.4 WAB Modification
         // wmtw5.war is not a wab but it's a proper bundle, so only Web-ContextPath can be modified
         final Map<String, Object> options = createOptions(WEBCONTEXTPATH5);
         this.b = super.installWar(options, "wmtw5.war", false);
         // install should succeed, but test won't work (bundle not started).
-        assertFalse("should not be able to access page", super.ableAccessPath(WEBCONTEXTPATH5));
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH5)).as("should not be able to access page").isFalse();
 
         // also verify that no other headers are modified
 		Dictionary<String,String> d = this.b.getHeaders();
         Object classPath = d.get(Constants.BUNDLE_CLASSPATH);
         String cp = classPath == null ? "" : (String)classPath;
-        assertTrue("Bundle-Classpath should be empty as it doesn't exist in the bundle before", cp.length() == 0);
+        assertThat(cp.length() == 0).as("Bundle-Classpath should be empty as it doesn't exist in the bundle before").isTrue();
     }
 
     /*
      * verify valid deployOptions overwrite original manifest Web-ContextPath
      */
+    @Test
     public void testWebContextPath010_2() throws Exception {
         // 128.4.4 WAB Modification
         // wmtw5.war is not a wab but it's a proper bundle, so only Web-ContextPath can be modified
@@ -188,13 +203,14 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
         } catch (BundleException e){
             // expected since this is a bundle and only Web-ContextPath can be specified in webbundle URL
         }
-        assertFalse("should not be able to access page", super.ableAccessPath(WEBCONTEXTPATH5));
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH5)).as("should not be able to access page").isFalse();
 
     }
 
     /*
      * verify valid deployOptions overwrite original manifest Web-ContextPath
      */
+    @Test
     public void testWebContextPath010_3() throws Exception {
         // 128.4.4 WAB Modification
         // wmtw5.war is not a wab but it's a proper bundle, so only Web-ContextPath can be modified
@@ -211,16 +227,18 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify Web-ContextPath doesn't start w/ forward slash still works
      */
+	@Test
 	public void testWebContextPath011() throws Exception {
         this.b = super.installBundle("wmtw5.war", true);
         // this won't work
-        assertFalse("should not be able to access " + WEBCONTEXTPATH5 + "_wm/BundleContextTestServlet", super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/BundleCOntextTestServlet"));
-        assertFalse("should not be able to access " + WEBCONTEXTPATH5 + "_wm/ClasspathTestServlet", super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/ClasspathTestServlet"));
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/BundleCOntextTestServlet")).as("should not be able to access " + WEBCONTEXTPATH5 + "_wm/BundleContextTestServlet").isFalse();
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/ClasspathTestServlet")).as("should not be able to access " + WEBCONTEXTPATH5 + "_wm/ClasspathTestServlet").isFalse();
     }
 
     /*
      * verify long Web-ContextPath specified in deployOptions
      */
+    @Test
     public void testLongWebContextPath001() throws Exception {
         final Map<String, Object> options = createOptions(LONGWEBCONTEXTPATH);
         this.b = super.installWar(options, "tw1.war", false);
@@ -230,6 +248,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify long Web-ContextPath specified in deployOptions
      */
+    @Test
     public void testLongWebContextPath004() throws Exception {
         final Map<String, Object> options = createOptions(LONGWEBCONTEXTPATH);
         this.b = super.installWar(options, "wmtw1.war", true);
@@ -239,21 +258,21 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify Web-ContextPath has to be unique
      */
+    @Test
     public void testWebContextPathError001() throws Exception {
         Map<String, Object> options = createOptions(WEBCONTEXTPATH4);
         this.b = super.installWar(options, "tw1.war", true);
         super.generalHeadersTest(options, "tw1.war", true, this.b);
 
         // install the war file, reuse the same options as tw1
-        log("attempt to install war file: tw4.war at context path " + WEBCONTEXTPATH4);
+        System.out.println("attempt to install war file: tw4.war at context path " + WEBCONTEXTPATH4);
         Bundle b2 = null;
         options = createOptions(WEBCONTEXTPATH4);
 
         b2 = installBundle(super.getWarURL("tw4.war", options), true);
         // should only able to access TW1 home page, as web extender should emit a FAILED event
         // when web context path is not unique for TW4
-        assertTrue("check the web context path " + WEBCONTEXTPATH4 + " in service registry",
-                super.checkServiceRegistered(WEBCONTEXTPATH4));
+        assertThat(super.checkServiceRegistered(WEBCONTEXTPATH4)).as("check the web context path " + WEBCONTEXTPATH4 + " in service registry").isTrue();
         String response = super.getResponse(WEBCONTEXTPATH4);
         super.checkTW1HomeResponse(response);
         uninstallBundle(b2);
@@ -274,13 +293,14 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify Web-ContextPath is available after when the war that uses the same Web-ContextPath is uninstalled
      */
+    @Test
     public void testWebContextPathError002() throws Exception {
         Map<String, Object> options = createOptions(WEBCONTEXTPATH4);
         this.b = super.installWar(options, "tw1.war", true);
         super.generalHeadersTest(options, "tw1.war", true, this.b);
 
         // install the war file, reuse the same options as tw1
-        log("attempt to install war file: tw4.war at context path " + WEBCONTEXTPATH4);
+        System.out.println("attempt to install war file: tw4.war at context path " + WEBCONTEXTPATH4);
         Bundle b2 = null;
         options = createOptions(WEBCONTEXTPATH4);
 
@@ -288,8 +308,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
             b2 = installBundle(super.getWarURL("tw4.war", options), true);
             // should only able to access TW1 home page, as web extender should emit a FAILED event
             // when web context path is not unique for TW4
-            assertTrue("check the web context path " + WEBCONTEXTPATH4 + " in service registry",
-                    super.checkServiceRegistered(WEBCONTEXTPATH4));
+            assertThat(super.checkServiceRegistered(WEBCONTEXTPATH4)).as("check the web context path " + WEBCONTEXTPATH4 + " in service registry").isTrue();
             String response = super.getResponse(WEBCONTEXTPATH4);
             super.checkTW1HomeResponse(response);
             uninstallBundle(this.b);
@@ -298,7 +317,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
             // previously installed b2 should get started now after b is uninstalled
             // as the particular web-contextpath is avail now
             super.checkServiceRegistered(WEBCONTEXTPATH4);
-			Sleep.sleep(OSGiTestCaseProperties.getTimeout()
+			Thread.sleep(OSGiTestCaseProperties.getTimeout()
 					* OSGiTestCaseProperties.getScaling());
             response = super.getResponse(WEBCONTEXTPATH4);
             super.checkTW4HomeResponse(response);
@@ -320,6 +339,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify install 6 web applications
      */
+    @Test
     public void testMultipleWebContextPath001() throws Exception {
         Map<String, Object> options = createOptions(WEBCONTEXTPATH1);
         this.b = super.installWar(options, "tw1.war", true);
@@ -345,8 +365,8 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
 
             options = createOptions(WEBCONTEXTPATH5 + "_wm");
             bundles[4] = super.installWar(options, "wmtw5.war", true);
-            assertFalse("should not be able to access " + WEBCONTEXTPATH5 + "_wm/BundleContextTestServlet", super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/BundleCOntextTestServlet"));
-            assertFalse("should not be able to access " + WEBCONTEXTPATH5 + "_wm/ClasspathTestServlet", super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/ClasspathTestServlet"));
+            assertThat(super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/BundleCOntextTestServlet")).as("should not be able to access " + WEBCONTEXTPATH5 + "_wm/BundleContextTestServlet").isFalse();
+            assertThat(super.ableAccessPath(WEBCONTEXTPATH5 + "_wm/ClasspathTestServlet")).as("should not be able to access " + WEBCONTEXTPATH5 + "_wm/ClasspathTestServlet").isFalse();
         } finally {
             for (int i = 0; i < bundles.length; i++) {
                 if (bundles[i] != null) {
@@ -355,7 +375,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
             }
 
             // let's wait some time for the bundle to be uninstalled fully
-			Sleep.sleep(OSGiTestCaseProperties.getTimeout()
+			Thread.sleep(OSGiTestCaseProperties.getTimeout()
 					* OSGiTestCaseProperties.getScaling());
         }
     }
@@ -363,6 +383,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
     /*
      * verify install 100 web applications
      */
+    @Test
     public void testMultipleWebContextPath002() throws Exception {
         Bundle[] bundles = new Bundle[100];
         try {
@@ -379,7 +400,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
                 }
             }
             // let's wait some time for the bundle to be uninstalled fully
-			Sleep.sleep(OSGiTestCaseProperties.getTimeout()
+			Thread.sleep(OSGiTestCaseProperties.getTimeout()
 					* OSGiTestCaseProperties.getScaling());
         }
     }
@@ -388,6 +409,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
      * verify install 10 web applications with same web-contextpath
      * and the correct one are being deployed when the web-contextpath is available
      */
+    @Test
     public void testMultipleWebContextPath003() throws Exception {
         Bundle[] bundles = new Bundle[10];
         try {
@@ -404,7 +426,7 @@ public class BundleWebContextPathTest extends ManifestHeadersTestBundleControl {
 
             for (int i = 0; i < 9; i++) {
                 bundles[i].stop();
-				Sleep.sleep(OSGiTestCaseProperties.getTimeout()
+				Thread.sleep(OSGiTestCaseProperties.getTimeout()
 						* OSGiTestCaseProperties.getScaling());
                 options = createOptions(WEBCONTEXTPATH1);
                 options.put(Constants.BUNDLE_SYMBOLICNAME, "tw1_" + (i + 1) + "_test_war");

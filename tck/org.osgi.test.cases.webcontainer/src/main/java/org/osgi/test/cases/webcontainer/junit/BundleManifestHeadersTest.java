@@ -17,9 +17,13 @@
  *******************************************************************************/
 package org.osgi.test.cases.webcontainer.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -36,6 +40,7 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
     /*
      * verify valid deployOptions overwrite original manifest headers
      */
+    @Test
     public void testManifestHeaders001() throws Exception {
         final Map<String, Object> options = createOptions(VERSION1, MANIFESTVERSION1, SYMBOLICNAME1,
                 CLASSPATH3, IMPORTS1, EXPORTS1, WEBCONTEXTPATH1);
@@ -46,6 +51,7 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
     /*
      * verify valid deployOptions overwrite original manifest headers
      */
+    @Test
     public void testManifestHeaders004() throws Exception {
         final Map<String, Object> options = createOptions(VERSION1, MANIFESTVERSION1, SYMBOLICNAME4,
                 CLASSPATH3, IMPORTS4, EXPORTS4, WEBCONTEXTPATH4);
@@ -56,6 +62,7 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
     /*
      * verify valid deployOptions overwrite original manifest headers
      */
+    @Test
     public void testManifestHeaders005() throws Exception {
         final Map<String, Object> options = createOptions(VERSION2, MANIFESTVERSION1, SYMBOLICNAME5,
                 CLASSPATH1, IMPORTS5, EXPORTS5, WEBCONTEXTPATH5);
@@ -67,6 +74,7 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
     /*
      * verify valid deployOptions overwrite original manifest headers
      */
+    @Test
     public void testManifestHeaders006() throws Exception {
         final Map<String, Object> options = createOptions(VERSION1, MANIFESTVERSION1, SYMBOLICNAME1,
                 CLASSPATH3, IMPORTS1, EXPORTS1, WEBCONTEXTPATH1);
@@ -77,13 +85,14 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
             // expected since this is a bundle
         }
         
-        assertFalse("should not be able to access page", super.ableAccessPath(WEBCONTEXTPATH1));
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH1)).as("should not be able to access page").isFalse();
 
     }
     
     /*
      * install wab without using url handler
      */
+    @Test
     public void testManifestHeaders006_1() throws Exception {
         this.b = super.installBundle("wmtw1.war", false);
         super.generalHeadersTest(new HashMap<String, Object>(), "wmtw1.war", false, this.b);
@@ -93,6 +102,7 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
     /*
      * verify valid deployOptions overwrite original manifest headers
      */
+    @Test
     public void testManifestHeaders009() throws Exception {
         final Map<String, Object> options = createOptions(VERSION1, MANIFESTVERSION1, SYMBOLICNAME4,
                 CLASSPATH3, IMPORTS4, EXPORTS4, WEBCONTEXTPATH4);
@@ -103,13 +113,14 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
             // expected since this is a bundle
         }
         
-        assertFalse("should not be able to access page", super.ableAccessPath(WEBCONTEXTPATH4));
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH4)).as("should not be able to access page").isFalse();
 
     }
 
     /*
      * verify valid deployOptions overwrite original manifest headers
      */
+    @Test
     public void testManifestHeaders010() throws Exception {
         final Map<String, Object> options = createOptions(VERSION2, MANIFESTVERSION1, SYMBOLICNAME5,
                 CLASSPATH1, IMPORTS5, EXPORTS5, WEBCONTEXTPATH5);
@@ -120,13 +131,14 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
             // expected since this is a bundle
         }
         
-        assertFalse("should not be able to access page", super.ableAccessPath(WEBCONTEXTPATH5));
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH5)).as("should not be able to access page").isFalse();
 
     }
 
     /*
      * verify valid deployOptions overwrite original manifest headers
      */
+    @Test
     public void testManifestHeaders011() throws Exception {
         final Map<String, Object> options = createOptions(VERSION2, MANIFESTVERSION1, SYMBOLICNAME5,
                 CLASSPATH2, IMPORTS5, EXPORTS5, WEBCONTEXTPATH5);
@@ -137,29 +149,30 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
             // expected since this is a bundle
         }
         
-        assertFalse("should not be able to access page", super.ableAccessPath(WEBCONTEXTPATH5));
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH5)).as("should not be able to access page").isFalse();
 
     }
 
     /*
      * verify valid deployOptions overwrite original manifest headers
      */
+    @Test
     public void testManifestHeaders012() throws Exception {
         final Map<String, Object> options = createOptions(VERSION2, MANIFESTVERSION1, SYMBOLICNAME5,
                null, IMPORTS_OSGI_FRAMEWORK, EXPORTS5, WEBCONTEXTPATH5);
         this.b = super.installWar(options, "wm3tw5.war", true);
-        assertTrue("check the web context path " + WEBCONTEXTPATH5 + " in service registry", 
-                super.checkServiceRegistered(WEBCONTEXTPATH5));
+        assertThat(super.checkServiceRegistered(WEBCONTEXTPATH5)).as("check the web context path " + WEBCONTEXTPATH5 + " in service registry").isTrue();
 
-        assertTrue("should be able to access " + WEBCONTEXTPATH5, super.ableAccessPath(WEBCONTEXTPATH5));
-        assertTrue("service should be registered", super.checkServiceRegistered(WEBCONTEXTPATH5));
-        assertTrue("should be able to access servlet page", super.ableAccessPath(WEBCONTEXTPATH5 + "/BundleContextTestServlet"));
-        assertTrue("should be able to access classpath servlet page", super.ableAccessPath(WEBCONTEXTPATH5 + "/ClasspathTestServlet"));
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH5)).as("should be able to access " + WEBCONTEXTPATH5).isTrue();
+        assertThat(super.checkServiceRegistered(WEBCONTEXTPATH5)).as("service should be registered").isTrue();
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH5 + "/BundleContextTestServlet")).as("should be able to access servlet page").isTrue();
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH5 + "/ClasspathTestServlet")).as("should be able to access classpath servlet page").isTrue();
     }
     
     /*
      * verify valid deployOptions overwrite original manifest headers
      */
+    @Test
     public void testManifestHeaders013() throws Exception {
         final Map<String, Object> options = createOptions(VERSION2, MANIFESTVERSION1, null,
                 null, IMPORTS5, EXPORTS5, WEBCONTEXTPATH5);
@@ -169,13 +182,14 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
         } catch (BundleException e){
             // expected since this is a bundle
         }
-        assertFalse("should not be able to access page", super.ableAccessPath(WEBCONTEXTPATH5));
+        assertThat(super.ableAccessPath(WEBCONTEXTPATH5)).as("should not be able to access page").isFalse();
 
     }
     
     /*
      * verify valid deployOptions overwrite original manifest headers
      */
+    @Test
     public void testManifestHeaders015() throws Exception {
         final Map<String, Object> options = createOptions(VERSION2, MANIFESTVERSION1, SYMBOLICNAME5,
                 CLASSPATH3, IMPORTS5, EXPORTS5, null);
@@ -194,6 +208,7 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
     /*
      * verify multiple WebApps manifest headers processing
      */
+    @Test
     public void testMultipleManifestHeaders001() throws Exception {
         final Map<String, Object> options = createOptions(null, MANIFESTVERSION1, "tw1",
                 CLASSPATH3, IMPORTS1, EXPORTS1, "/tw1");
@@ -217,6 +232,7 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
     /*
      * verify multiple WebApps manifest headers processing
      */
+    @Test
     public void testMultipleManifestHeaders002() throws Exception {
         final Map<String, Object> options = createOptions(null, MANIFESTVERSION1, "tw1",
                 CLASSPATH3, IMPORTS1, EXPORTS1, "/tw1");
@@ -239,6 +255,7 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
     /*
      * verify multiple WebApps manifest headers processing
      */
+    @Test
     public void testMultipleManifestHeaders005() throws Exception {
         final Map<String, Object> options = createOptions(VERSION1, MANIFESTVERSION1, SYMBOLICNAME1,
                 CLASSPATH3, IMPORTS1, EXPORTS1, WEBCONTEXTPATH1);
@@ -284,6 +301,7 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
     /*
      * verify multiple WebApps manifest headers processing
      */
+    @Test
     public void testMultipleManifestHeaders007() throws Exception {
         final Map<String, Object> options = createOptions(VERSION1, MANIFESTVERSION1, SYMBOLICNAME1,
                 CLASSPATH3, IMPORTS1, EXPORTS1, WEBCONTEXTPATH1);
@@ -316,9 +334,9 @@ public class BundleManifestHeadersTest extends ManifestHeadersTestBundleControl 
             bundles[4] = super.installWar(options10, "tw5.war", true);
             super.generalHeadersTest(options10, "tw5.war", true, bundles[4]);
             classpassServletTest(bundles[4]);
-            assertFalse(this.b == bundles[2]);
-            assertFalse(bundles[0] == bundles[3]);
-            assertFalse(bundles[1] == bundles[4]);
+            assertThat(this.b).isNotSameAs(bundles[2]);
+            assertThat(bundles[0]).isNotSameAs(bundles[3]);
+            assertThat(bundles[1]).isNotSameAs(bundles[4]);
         } finally {
             for (int i = 0; i < bundles.length; i++) {
                 if (bundles[i] != null) {
