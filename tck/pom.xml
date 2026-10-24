@@ -44,7 +44,7 @@
 		<slf4j.version>1.7.7</slf4j.version>
 		<spring-aop.version>3.1.0.RELEASE</spring-aop.version>
 		<spring-beans.version>3.1.0.RELEASE</spring-beans.version>
-		<spring-context.version>3.1.0.RELEASE</spring-context.version>
+		<spring-context.version>7.0.9</spring-context.version>
 		<spring-core.version>3.1.0.RELEASE</spring-core.version>
 	</properties>
 
