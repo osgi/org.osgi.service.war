@@ -73,7 +73,7 @@ tck.range: ${range;[===,==+);${version_cleanup;${1}}}
 	bnd.identity;id='org.glassfish.hk2.external.aopalliance-repackaged';version='${tck.range;${aopalliance-repackaged.version}}',\
 	bnd.identity;id='org.apache.geronimo.specs.geronimo-jpa_1.0_spec';version='${tck.range;${geronimo-jpa_1.0_spec.version}}',\
 	bnd.identity;id='slf4j.api';version='${tck.range;${slf4j.version}}',\
-	bnd.identity;id='slf4j.nop';version='${tck.range;${slf4j-nop.version}}',\
+	bnd.identity;id='slf4j.nop';version='${tck.range;${slf4j.version}}',\
 	bnd.identity;id='org.springframework.aop';version='${tck.range;${spring-aop.version}}',\
 	bnd.identity;id='org.springframework.beans';version='${tck.range;${spring-beans.version}}',\
 	bnd.identity;id='org.springframework.context';version='${tck.range;${spring-context.version}}',\
@@ -120,6 +120,8 @@ tck.range: ${range;[===,==+);${version_cleanup;${1}}}
 
 # -runbundles is committed and verified by the build; after a dependency
 # change update it with: mvn bnd-resolver:resolve
+# slf4j 2 binds its provider once, at the first logger: slf4j starts at
+# level 1, before the implementation (all others at 2), or it logs nothing.
 -runbundles: \
 	assertj-core;version='${tck.range;${assertj.version}}',\
 	javax.websocket;version='[1.1.0,1.1.1)',\
@@ -183,5 +185,5 @@ tck.range: ${range;[===,==+);${version_cleanup;${1}}}
 	org.springframework.beans;version='${tck.range;${spring-beans.version}}',\
 	org.springframework.context;version='${tck.range;${spring-context.version}}',\
 	org.springframework.core;version='${tck.range;${spring-core.version}}',\
-	slf4j.api;version='${tck.range;${slf4j.version}}',\
-	slf4j.nop;version='${tck.range;${slf4j-nop.version}}'
+	slf4j.api;version='${tck.range;${slf4j.version}}';startlevel=1,\
+	slf4j.nop;version='${tck.range;${slf4j.version}}';startlevel=1
